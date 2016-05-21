@@ -11,14 +11,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import model.unit.Bear;
-import model.unit.Buffalo;
+import model.unit.Buff;
 import view.BroadPanel;
 import controller.system.*;
 
 public class BoardActionListener implements ActionListener {
 	private BroadPanel _board;
 	private Bear _bear;
-	private Buffalo _buff;
+	private Buff _buff;
 	private Point _point;
 	
 	public BoardActionListener(BroadPanel aBoard, Point aPoint, GameEngineController aController) {
@@ -40,27 +40,27 @@ public class BoardActionListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		//check if 
-		
-		if (this._bear != null) {
-			//delete bear from old panel
-			this._deleteBearRangeFromOldPanels();
-			
-			//add bear to new panel
-			this._bear.setCurrentPoint(this._point);			
-			JButton selectedButton = this._board.block[this._point.x][this._point.y].getBtnBlock();
-			String imageName = "resource/" + this._bear.getImage();
-			
-			if (imageName != null) {
-				Image img = Toolkit.getDefaultToolkit().getImage(imageName);
-				ImageIcon imgIcon = new ImageIcon(img);
-				selectedButton.setIcon(imgIcon);					
-			}
-			selectedButton.addActionListener(this._bear.getListener());
-		}
-		if (this._buff != null) {
-			this._buff.setCurrentPoint(_point);
-//			this._board.reloadBuff(this._buff);
-		}
+//		//check if 
+//		
+//		if (this._bear != null) {
+//			//delete bear from old panel
+//			this._deleteBearRangeFromOldPanels();
+//			
+//			//add bear to new panel
+//			this._bear.setCurrentPoint(this._point);			
+//			JButton selectedButton = this._board.block[this._point.x][this._point.y].getBtnBlock();
+//			String imageName = "resource/" + this._bear.getImage();
+//			
+//			if (imageName != null) {
+//				Image img = Toolkit.getDefaultToolkit().getImage(imageName);
+//				ImageIcon imgIcon = new ImageIcon(img);
+//				selectedButton.setIcon(imgIcon);					
+//			}
+//			selectedButton.addActionListener(this._bear.getListener());
+//		}
+//		if (this._buff != null) {
+//			this._buff.setCurrentPoint(_point);
+////			this._board.reloadBuff(this._buff);
+//		}
 	}
 }

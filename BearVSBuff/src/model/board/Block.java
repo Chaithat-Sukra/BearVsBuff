@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import model.unit.Unit;
 import model.unit.Bear;
-import model.unit.Buffalo;
+import model.unit.Buff;
 
 import controller.listener.BoardActionListener;
 
@@ -27,7 +27,7 @@ public class Block {
 	private JPanel _pnBlock;
 	private JButton _btnBlock;		
 	private Bear _bear;
-	private Buffalo _buff;
+	private Buff _buff;
 	
 	public Block(JPanel aPanel, Point aPoint, ActionListener aListener) {
 		this._pnBlock =  aPanel;
@@ -54,10 +54,10 @@ public class Block {
 			this._bear = (Bear)aUnit;	
 			img = Toolkit.getDefaultToolkit().getImage(this._bear.getImage());				
 		}
-		if (aUnit instanceof Buffalo) {
+		if (aUnit instanceof Buff) {
 			isStoreBuff = true;
 			
-			this._buff = (Buffalo)aUnit;	
+			this._buff = (Buff)aUnit;	
 			img = Toolkit.getDefaultToolkit().getImage(this._buff.getImage());				
 		}
 		ImageIcon imgIconCard = new ImageIcon(img);
@@ -156,11 +156,11 @@ public class Block {
 		this._bear = _bear;
 	}
 
-	public Buffalo getBuff() {
+	public Buff getBuff() {
 		return _buff;
 	}
 
-	public void setBuff(Buffalo _buff) {
+	public void setBuff(Buff _buff) {
 		this._buff = _buff;
 	}
 }

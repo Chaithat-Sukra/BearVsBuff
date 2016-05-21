@@ -11,15 +11,18 @@ import view.BoardFrame;
 import view.BroadPanel;
 import model.board.Block;
 import model.unit.*;
-import model.unit.Bear.TypeBear;
-import model.unit.Buffalo.TypeBuff;
+import utility.AbstractFactory;
+import utility.BearFactory.TypeBear;
+import utility.BuffaloFactory.TypeBuff;
+import utility.FactoryCreator;
+import utility.FactoryCreator.TypeUnit;
 
 public class GameEngineController {
 
 	private BroadPanel _boardPanel = new BroadPanel();
 	private BoardFrame _fBoard;
 	private Bear _currentBear;
-	private Buffalo _currentBuff;
+	private Buff _currentBuff;
 	private boolean _isTurnBear;  
 	
 	int _noOfBuff = 3;
@@ -82,7 +85,7 @@ public class GameEngineController {
 							}
 							else {
 								//check to show move range
-								Buffalo buff = block.getBuff();
+								Buff buff = block.getBuff();
 								if (buff != null) {
 									Point pointUnit = buff.getCurrentPoint();
 									if (pointUnit.x == pointClick.x && pointUnit.y == pointClick.y) {
@@ -135,39 +138,41 @@ public class GameEngineController {
 	}
 	
 	private void _createBearTeam() {
+		AbstractFactory unitFactory = FactoryCreator.getFactory(TypeUnit.TypeBear);
 		Bear bear = null;
 		
-		Point pointBear = new Point(6, 3);
-		bear = new Bear(pointBear, TypeBear.TypeBearBoss);			
-		Block blockBear = this._boardPanel.block[pointBear.x][pointBear.y];
+		bear = unitFactory.getBear(TypeBear.TypeBearBoss);
+		Point pointBearBoss = bear.getCurrentPoint();
+		Block blockBear = this._boardPanel.block[pointBearBoss.x][pointBearBoss.y];
 		blockBear.store(bear);
 		
-		Point pointBearLeft = new Point(6, 2);
-		bear = new Bear(pointBearLeft, TypeBear.TypeBearLeft);			
+		bear = unitFactory.getBear(TypeBear.TypeBearLeft);
+		Point pointBearLeft = bear.getCurrentPoint();
 		Block blockBearLeft = this._boardPanel.block[pointBearLeft.x][pointBearLeft.y];
 		blockBearLeft.store(bear);
 
-		Point pointBearRight = new Point(6, 4);
-		bear = new Bear(pointBearRight, TypeBear.TypeBearRight);			
+		bear = unitFactory.getBear(TypeBear.TypeBearRight);
+		Point pointBearRight = bear.getCurrentPoint();
 		Block blockBearRight = this._boardPanel.block[pointBearRight.x][pointBearRight.y];
 		blockBearRight.store(bear);
 	}
 	
 	private void _createBuffaloTeam() {
-		Buffalo buff = null;
+		AbstractFactory unitFactory = FactoryCreator.getFactory(TypeUnit.TypeBuff);
+		Buff buff = null;
 		
-		Point pointBuff = new Point(0, 3);
-		buff = new Buffalo(pointBuff, TypeBuff.TypeBuffBoss);
+		buff = unitFactory.getBuffalo(TypeBuff.TypeBuffBoss);
+		Point pointBuff = buff.getCurrentPoint();
 		Block blockBuff = this._boardPanel.block[pointBuff.x][pointBuff.y];
 		blockBuff.store(buff);
 		
-		Point pointBuffLeft = new Point(0, 2);
-		buff = new Buffalo(pointBuffLeft, TypeBuff.TypeBuffLeft);
+		buff = unitFactory.getBuffalo(TypeBuff.TypeBuffLeft);
+		Point pointBuffLeft = buff.getCurrentPoint();
 		Block blockBuffLeft = this._boardPanel.block[pointBuffLeft.x][pointBuffLeft.y];
 		blockBuffLeft.store(buff);
 
-		Point pointBuffRight = new Point(0, 4);
-		buff = new Buffalo(pointBuffRight, TypeBuff.TypeBuffRight);
+		buff = unitFactory.getBuffalo(TypeBuff.TypeBuffRight);
+		Point pointBuffRight = buff.getCurrentPoint();
 		Block blockBuffRight = this._boardPanel.block[pointBuffRight.x][pointBuffRight.y];
 		blockBuffRight.store(buff);
 	}
@@ -189,7 +194,7 @@ public class GameEngineController {
 				Block block = aBoardPanel.block[aPoint.x][aPoint.y];
 				if (this._isTurnBear) {
 					if (block.isStoreBuff) {
-						Buffalo buff = block.getBuff(); 
+						Buff buff = block.getBuff(); 
 						if (buff.deal(this._currentBear.getDamage())) {
 							//buffalo died;
 							block.remove();
