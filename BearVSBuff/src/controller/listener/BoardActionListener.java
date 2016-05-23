@@ -76,6 +76,7 @@ public class BoardActionListener implements ActionListener {
 					//attack enemy in range
 					this._controller.attackEnemyInRange();
 					this._controller.isTurnBear = false;
+					this._controller.saveLastTurn();
 				}
 			}
 		}
@@ -103,6 +104,7 @@ public class BoardActionListener implements ActionListener {
 					//attack enemy in range
 					this._controller.attackEnemyInRange();
 					this._controller.isTurnBear = true;
+					this._controller.saveLastTurn();
 				}
 			}
 		}

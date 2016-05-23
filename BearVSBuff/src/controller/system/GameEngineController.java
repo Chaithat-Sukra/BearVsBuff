@@ -3,6 +3,7 @@ package controller.system;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
 
 import javax.swing.JOptionPane;
 
@@ -30,13 +31,18 @@ public class GameEngineController {
 	
 	private BoardFrame _fBoard;	
 	
+	private ArrayList<BoardState> _previousBoardStates;
+	
 	int _noOfBuff = 3;
 	int _noOfBear = 3;
 	
 	private List<Observer> _observers = new ArrayList<Observer>();
+	int _turnsToUndo = 3;	//As specified by the spec sheet
 	
 	public GameEngineController() {
 		this.isTurnBear = true;
+		
+		_previousBoardStates = new ArrayList<BoardState>();
 		
 		this._fBoard = new BoardFrame();  	
 		this._promptStartGame();
@@ -123,6 +129,39 @@ public class GameEngineController {
 	
 	public void clearObserver() {
 		this._observers.clear();
+	}
+	
+	public void saveLastTurn(){
+		BoardState currentBoardState = new BoardState(BroadPanel.kVERTICAL_NO, BroadPanel.kHORIZONTALL_NO);
+
+		currentBoardState._isBearTurn = isTurnBear;
+		
+		for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
+			for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+				currentBoardState._boardTiles[x][y] = currentBoardState.new BoardTile();
+				currentBoardState._boardTiles[x][y]._highlighted = boardPanel.block[x][y].isHighlight;
+				
+				if(boardPanel.block[x][y].isStoreBear){
+					currentBoardState._boardTiles[x][y]._unitData = currentBoardState.new UnitData();
+					currentBoardState._boardTiles[x][y]._unitData._isBear = true;
+					currentBoardState._boardTiles[x][y]._unitData._unitType = boardPanel.block[x][y].getBear().getClass().getSimpleName();
+					currentBoardState._boardTiles[x][y]._unitData._unitHp = boardPanel.block[x][y].getBear().getHp();
+					currentBoardState._boardTiles[x][y]._unitData._unitDamage = boardPanel.block[x][y].getBear().getDamage();
+					
+				}
+				
+				if(boardPanel.block[x][y].isStoreBuff){
+					currentBoardState._boardTiles[x][y]._unitData = currentBoardState.new UnitData();
+					currentBoardState._boardTiles[x][y]._unitData._isBuff = true;
+					currentBoardState._boardTiles[x][y]._unitData._unitType = boardPanel.block[x][y].getBuff().getClass().getSimpleName();
+					currentBoardState._boardTiles[x][y]._unitData._unitHp = boardPanel.block[x][y].getBuff().getHp();
+					currentBoardState._boardTiles[x][y]._unitData._unitDamage = boardPanel.block[x][y].getBuff().getDamage();
+				}
+				
+			}
+		}
+		
+		_previousBoardStates.add(currentBoardState);
 	}
 	
 	private void _notifyHighlightObservers(boolean aHightlight) {
@@ -221,4 +260,157 @@ public class GameEngineController {
 		blockBuffRight.store(buff);
 		this._bossBuff.addTeam(buff);
 	}
+	
+	private void _restoreBoardState(BoardState stateToRestore){
+		
+		isTurnBear = stateToRestore._isBearTurn;
+		
+		for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
+			for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+				boardPanel.block[x][y].remove();
+				
+				boardPanel.block[x][y].isHighlight = stateToRestore._boardTiles[x][y]._highlighted;
+				
+				if(stateToRestore._boardTiles[x][y]._unitData != null){
+					if(stateToRestore._boardTiles[x][y]._unitData._isBear){
+						AbstractFactory unitFactory = FactoryCreator.getFactory(TypeUnit.TypeBear);
+						Bear bear = null;
+						bear = unitFactory.getBear(TypeBear.valueOf(TypeBear.class, "Type" + stateToRestore._boardTiles[x][y]._unitData._unitType));
+						Block blockBear = this.boardPanel.block[x][y];
+						bear.setHp( stateToRestore._boardTiles[x][y]._unitData._unitHp);
+						bear.setDamage(stateToRestore._boardTiles[x][y]._unitData._unitDamage);
+						bear.setCurrentPoint(new Point(x, y));
+						blockBear.store(bear);
+					}
+					
+					if(stateToRestore._boardTiles[x][y]._unitData._isBuff){
+						AbstractFactory unitFactory = FactoryCreator.getFactory(TypeUnit.TypeBuff);
+						Buff buff = null;
+						buff = unitFactory.getBuffalo(TypeBuff.valueOf(TypeBuff.class, "Type" + stateToRestore._boardTiles[x][y]._unitData._unitType));
+						Block blockBuff = this.boardPanel.block[x][y];
+						buff.setHp( stateToRestore._boardTiles[x][y]._unitData._unitHp);
+						buff.setDamage(stateToRestore._boardTiles[x][y]._unitData._unitDamage);
+						buff.setCurrentPoint(new Point(x, y));
+						blockBuff.store(buff);
+					}
+				}
+			}
+		}
+	}
+	
+	private void _undoMoves(){
+		
+		//Remove the last 3 states, if there are 3 to remove. Otherwise leave 1 state.
+		for(int i = 0; i < _turnsToUndo; i++){
+			if(_previousBoardStates.size() > 1){
+				_previousBoardStates.remove(_previousBoardStates.size()-1);
+			}
+		}
+		
+		//If there's a state in the list, then restore it.
+		if(!_previousBoardStates.isEmpty()) _restoreBoardState(_previousBoardStates.get(_previousBoardStates.size()-1));
+	}
+	
+	private void _saveBoardStateToFile()
+	{
+		BoardState boardState = _previousBoardStates.get(_previousBoardStates.size()-1);
+		String newline = System.getProperty("line.separator");
+		
+		 try {
+			OutputStream os = new FileOutputStream("board.txt");
+			
+			//Record if it was the bears turn
+			os.write(Boolean.toString(this.isTurnBear).getBytes());
+			os.write( newline.getBytes());
+	
+			//Then save the rest of the board
+			for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
+				for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+					os.write( Boolean.toString(boardState._boardTiles[x][y]._highlighted).getBytes());
+					os.write( newline.getBytes());
+					
+					
+					if(boardState._boardTiles[x][y]._unitData != null) {
+						os.write( "has_unit".getBytes());
+						os.write( newline.getBytes());
+						os.write( Integer.toString(boardState._boardTiles[x][y]._unitData._unitDamage).getBytes());
+						os.write( newline.getBytes());
+						os.write( Integer.toString(boardState._boardTiles[x][y]._unitData._unitHp).getBytes());
+						os.write( newline.getBytes());
+						os.write( Boolean.toString(boardState._boardTiles[x][y]._unitData._isBear).getBytes());
+						os.write( newline.getBytes());
+						os.write( Boolean.toString(boardState._boardTiles[x][y]._unitData._isBuff).getBytes());
+						os.write( newline.getBytes());
+						os.write( boardState._boardTiles[x][y]._unitData._unitType.getBytes());
+						os.write( newline.getBytes());
+					}
+					else {
+						os.write( "no_unit".getBytes());
+						os.write( newline.getBytes());
+					}
+				}
+			}
+			
+			os.close();
+		 }
+		 catch(IOException ioException) {
+			 System.err.format("IOException: %s%n", ioException);
+		 }
+		 finally {
+			 
+		 }
+	 
+	}
+	
+	private void _loadBoardStateFromFile()
+	{
+		BoardState loadedState = new BoardState(BroadPanel.kVERTICAL_NO, BroadPanel.kHORIZONTALL_NO);
+		
+		 try {
+		   BufferedReader is = new BufferedReader(new FileReader ("board.txt"));
+		   
+		   String line;
+		   
+		   line = is.readLine();
+			   
+		   boolean wasBearTurn = Boolean.parseBoolean(line);
+		   loadedState._isBearTurn = wasBearTurn;
+		   
+			for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
+				for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+					 line = is.readLine();
+					 boolean wasHighlighted = Boolean.parseBoolean(line);
+					 loadedState._boardTiles[x][y]._highlighted = wasHighlighted;
+					 
+					 line = is.readLine();
+					 if(line.equals("has_unit"))
+					 {
+						 line = is.readLine();
+						 loadedState._boardTiles[x][y]._unitData = loadedState.new UnitData();
+						 loadedState._boardTiles[x][y]._unitData._unitDamage = Integer.parseInt(line);
+						 line = is.readLine();
+						 loadedState._boardTiles[x][y]._unitData._unitHp  = Integer.parseInt(line);
+						 line = is.readLine();
+						 loadedState._boardTiles[x][y]._unitData._isBear = Boolean.parseBoolean(line);
+						 line = is.readLine();
+						 loadedState._boardTiles[x][y]._unitData._isBuff = Boolean.parseBoolean(line);
+						 line = is.readLine();
+						 loadedState._boardTiles[x][y]._unitData._unitType = line;
+					 }
+				}
+			}
+			
+			is.close();
+
+		 }
+		 catch(IOException ioException) {
+			 System.err.format("IOException: %s%n", ioException);
+		 }
+		 finally {
+			 
+		 }
+		 
+		 _restoreBoardState(loadedState);
+	}
 }
+
