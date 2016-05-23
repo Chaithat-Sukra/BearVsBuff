@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
 
 import model.board.Block;
+import controller.listener.BoardActionListener; 
 
 public class BroadPanel extends JPanel {
 	
@@ -21,12 +21,13 @@ public class BroadPanel extends JPanel {
 	
 	public Block block[][] = new Block[kVERTICAL_NO][kHORIZONTALL_NO];;
 	
+	
 	public BroadPanel() {
 		this.setLayout(new GridLayout(kVERTICAL_NO, kHORIZONTALL_NO, 1, 1));
 		this.setBackground(Color.black);		
 	}
 	
-	public void setContentOfBoard (Point aPoint, ActionListener aListener) {
+	public void setContentOfBoard (Point aPoint, BoardActionListener aListener) {
 		this.block[aPoint.x][aPoint.y] = new Block(new JPanel(), aPoint, aListener);
 		this.add(this.block[aPoint.x][aPoint.y].getPanelBlock());
 		

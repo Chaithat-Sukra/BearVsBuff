@@ -1,9 +1,9 @@
-package utility;
+package utility.abstractFactory;
 
 import model.unit.Bear;
 import model.unit.Buff;
-import utility.BearFactory.TypeBear;
-import utility.BuffaloFactory.TypeBuff;
+import utility.abstractFactory.BearFactory.TypeBear;
+import utility.abstractFactory.BuffaloFactory.TypeBuff;
 
 public abstract class AbstractFactory {
 	public abstract Bear getBear(TypeBear aType);

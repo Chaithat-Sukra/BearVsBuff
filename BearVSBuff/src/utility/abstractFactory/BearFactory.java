@@ -1,10 +1,9 @@
-package utility;
-
-import utility.BuffaloFactory.TypeBuff;
+package utility.abstractFactory;
 
 import java.awt.Point;
 
 import model.unit.*;
+import utility.abstractFactory.BuffaloFactory.TypeBuff;
 
 public class BearFactory extends AbstractFactory {
 	public enum TypeBear
@@ -29,7 +28,6 @@ public class BearFactory extends AbstractFactory {
 	
 	@Override
 	public Buff getBuffalo(TypeBuff aType) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

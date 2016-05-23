@@ -1,10 +1,9 @@
-package utility;
-
-import utility.BearFactory.TypeBear;
+package utility.abstractFactory;
 
 import java.awt.Point;
 
 import model.unit.*;
+import utility.abstractFactory.BearFactory.TypeBear;
 
 public class BuffaloFactory extends AbstractFactory {
 	public enum TypeBuff

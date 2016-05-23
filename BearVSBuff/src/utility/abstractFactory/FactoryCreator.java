@@ -1,4 +1,4 @@
-package utility;
+package utility.abstractFactory;
 
 public class FactoryCreator {
 	public enum TypeUnit

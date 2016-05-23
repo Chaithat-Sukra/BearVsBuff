@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,20 +15,21 @@ import model.unit.Bear;
 import model.unit.Buff;
 
 import controller.listener.BoardActionListener;
+import controller.system.GameEngineController;
+import utility.observer.Observer;
 
-public class Block {	
+public class Block extends Observer {	
 	public boolean isStoreBear = false;
 	public boolean isStoreBuff = false;
 	public boolean isHighlight = false;
 	
-	private BoardActionListener _listner;
 	private Point _point;
 	private JPanel _pnBlock;
 	private JButton _btnBlock;		
 	private Bear _bear;
 	private Buff _buff;
 	
-	public Block(JPanel aPanel, Point aPoint, ActionListener aListener) {
+	public Block(JPanel aPanel, Point aPoint, BoardActionListener aListener) {
 		this._pnBlock =  aPanel;
 		this._point = aPoint;
 		
@@ -82,7 +82,6 @@ public class Block {
 	public void setHighlight(boolean aHighlight) {
 		this.isHighlight = aHighlight;
 		
-		//*
 		if (this.isHighlight) {
 			if (!this.isStoreBear && !this.isStoreBuff) {
 				this._btnBlock.setEnabled(true);
@@ -96,16 +95,7 @@ public class Block {
 			this._btnBlock.setEnabled(true);
 			this._btnBlock.setBackground(null);
 		}
-		/*/
-		this._btnBlock.setBackground(this.isHighlight? Color.red : null);
-		
-		if ((this.isStoreBear && !aHighlight) || this.isStoreBuff && !aHighlight) {
-			this._btnBlock.setEnabled(true);
-		}
-		else {
-			this._btnBlock.setEnabled(this.isHighlight);
-		}
-		//*/
+
 		this._btnBlock.setOpaque(true);
 		this._btnBlock.setBorderPainted(false);
 		this._btnBlock.repaint();
@@ -141,13 +131,6 @@ public class Block {
 		this._point = _point;
 	}
 	
-	public BoardActionListener getListener() {
-		return _listner;
-	}
-	public void setListenner(BoardActionListener _listner) {
-		this._listner = _listner;
-	}
-
 	public Bear getBear() {
 		return _bear;
 	}
@@ -162,5 +145,38 @@ public class Block {
 
 	public void setBuff(Buff _buff) {
 		this._buff = _buff;
+	}
+
+	@Override
+	public void updateHighlight(boolean aHighlight) {
+		this.setHighlight(aHighlight);
+	}
+
+	@Override
+	public void setSubject(GameEngineController aSubject) {
+		this.subject = aSubject;
+		this.subject.attachObserver(this);
+	}
+
+	@Override
+	public boolean dealDamage() {
+		if (this.subject.isTurnBear) {
+			if (this.isStoreBuff) {
+				Buff buff = this.getBuff(); 
+				if (buff.deal(this.subject.currentBear.getDamage())) {
+					return true;							
+				}				
+			}	
+			return false;
+		}
+		else {
+			if (this.isStoreBear) {
+				Bear bear = this.getBear();
+				if (bear.deal(this.subject.currentBuff.getDamage())) {
+					return true;							
+				}				
+			}
+			return false;
+		}
 	}
 }
