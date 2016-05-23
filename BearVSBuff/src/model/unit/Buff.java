@@ -67,6 +67,16 @@ public class Buff implements Unit {
 	public int getDamage() {
 		return this.damage;
 	}
+	
+	@Override
+	public void setHp(int hp) {
+		this.hp = hp;
+	}
+
+	@Override
+	public void setDamage(int damage) {
+		this.damage = damage;
+	}
 
 	@Override
 	public Point getCurrentPoint() {
