@@ -8,7 +8,8 @@ public class Buff implements Unit {
 	protected int hp;
 	protected int damage;
 	protected Point point;
-
+	protected boolean defending;
+	
 	public Buff(Point aPoint) {
 		this.point = aPoint;
 	}
@@ -51,6 +52,14 @@ public class Buff implements Unit {
 
 	@Override
 	public boolean deal(int aDamage) {
+		//Half the damage if defending
+		if(defending){
+			aDamage /= 2;
+			
+			//Stop defending after taking a hit
+			defending = false;
+		}
+		
 		this.hp -= aDamage;
 		if (this.hp <= 0) {
 			return true;
@@ -96,5 +105,11 @@ public class Buff implements Unit {
 	@Override
 	public String toString() {
 		return null;
+	}
+
+	@Override
+	public void enableDefensiveMode(boolean enable) {
+		 defending = enable;
+		
 	}
 }

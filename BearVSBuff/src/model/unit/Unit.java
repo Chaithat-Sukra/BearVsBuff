@@ -15,4 +15,5 @@ public interface Unit {
 	public abstract void setCurrentPoint(Point aPoint);
 	public abstract String getImage();
 	public abstract String toString();
+	public abstract void enableDefensiveMode(boolean enable);
 }
