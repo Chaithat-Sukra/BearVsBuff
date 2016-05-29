@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 
 import controller.listener.BoardActionListener;
 import view.BoardFrame;
-import view.BroadPanel;
+import view.BoardPanel;
 import model.board.Block;
 import model.unit.*;
 import utility.abstractFactory.AbstractFactory;
@@ -21,7 +21,7 @@ import utility.observer.Observer;
 
 public class GameEngineController {
 
-	public BroadPanel boardPanel = new BroadPanel();
+	public BoardPanel boardPanel = new BoardPanel();
 	public boolean isTurnBear;
 	
 	private BearBoss _bossBear;
@@ -118,7 +118,7 @@ public class GameEngineController {
 	}
 	
 	public boolean isScope(Point aPoint) {
-		if (aPoint.x < BroadPanel.kVERTICAL_NO && aPoint.y < BroadPanel.kHORIZONTALL_NO && aPoint.x >= 0 && aPoint.y >= 0)
+		if (aPoint.x < BoardPanel.kVERTICAL_NO && aPoint.y < BoardPanel.kHORIZONTALL_NO && aPoint.x >= 0 && aPoint.y >= 0)
 			return true;
 		return false;
 	}
@@ -132,12 +132,12 @@ public class GameEngineController {
 	}
 	
 	public void saveLastTurn(){
-		BoardState currentBoardState = new BoardState(BroadPanel.kVERTICAL_NO, BroadPanel.kHORIZONTALL_NO);
+		BoardState currentBoardState = new BoardState(BoardPanel.kVERTICAL_NO, BoardPanel.kHORIZONTALL_NO);
 
 		currentBoardState._isBearTurn = isTurnBear;
 		
-		for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
-			for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+		for (int x = 0; x < BoardPanel.kVERTICAL_NO; x++) {
+			for (int y = 0; y < BoardPanel.kHORIZONTALL_NO; y++) {
 				currentBoardState._boardTiles[x][y] = currentBoardState.new BoardTile();
 				currentBoardState._boardTiles[x][y]._highlighted = boardPanel.block[x][y].isHighlight;
 				
@@ -195,8 +195,8 @@ public class GameEngineController {
 				"", JOptionPane.YES_NO_OPTION);
 		if (dialogResult == JOptionPane.YES_OPTION) {
 			//create board			
-			for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
-				for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+			for (int x = 0; x < BoardPanel.kVERTICAL_NO; x++) {
+				for (int y = 0; y < BoardPanel.kHORIZONTALL_NO; y++) {
 					Point pointClick = new Point(x, y);
 					this.boardPanel.setContentOfBoard(pointClick, new BoardActionListener(this, pointClick));
 				}
@@ -265,8 +265,8 @@ public class GameEngineController {
 		
 		isTurnBear = stateToRestore._isBearTurn;
 		
-		for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
-			for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+		for (int x = 0; x < BoardPanel.kVERTICAL_NO; x++) {
+			for (int y = 0; y < BoardPanel.kHORIZONTALL_NO; y++) {
 				boardPanel.block[x][y].remove();
 				
 				boardPanel.block[x][y].isHighlight = stateToRestore._boardTiles[x][y]._highlighted;
@@ -324,8 +324,8 @@ public class GameEngineController {
 			os.write( newline.getBytes());
 	
 			//Then save the rest of the board
-			for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
-				for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+			for (int x = 0; x < BoardPanel.kVERTICAL_NO; x++) {
+				for (int y = 0; y < BoardPanel.kHORIZONTALL_NO; y++) {
 					os.write( Boolean.toString(boardState._boardTiles[x][y]._highlighted).getBytes());
 					os.write( newline.getBytes());
 					
@@ -364,7 +364,7 @@ public class GameEngineController {
 	
 	private void _loadBoardStateFromFile()
 	{
-		BoardState loadedState = new BoardState(BroadPanel.kVERTICAL_NO, BroadPanel.kHORIZONTALL_NO);
+		BoardState loadedState = new BoardState(BoardPanel.kVERTICAL_NO, BoardPanel.kHORIZONTALL_NO);
 		
 		 try {
 		   BufferedReader is = new BufferedReader(new FileReader ("board.txt"));
@@ -376,8 +376,8 @@ public class GameEngineController {
 		   boolean wasBearTurn = Boolean.parseBoolean(line);
 		   loadedState._isBearTurn = wasBearTurn;
 		   
-			for (int x = 0; x < BroadPanel.kVERTICAL_NO; x++) {
-				for (int y = 0; y < BroadPanel.kHORIZONTALL_NO; y++) {
+			for (int x = 0; x < BoardPanel.kVERTICAL_NO; x++) {
+				for (int y = 0; y < BoardPanel.kHORIZONTALL_NO; y++) {
 					 line = is.readLine();
 					 boolean wasHighlighted = Boolean.parseBoolean(line);
 					 loadedState._boardTiles[x][y]._highlighted = wasHighlighted;

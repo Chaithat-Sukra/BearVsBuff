@@ -9,7 +9,7 @@ import model.board.Block;
 import model.unit.Bear;
 import model.unit.Buff;
 import model.unit.Unit;
-import view.BroadPanel;
+import view.BoardPanel;
 import controller.system.*;
 
 public class BoardActionListener implements ActionListener {
@@ -22,7 +22,7 @@ public class BoardActionListener implements ActionListener {
 		this._point = aPoint;
 	}
 	
-	private void _handleObserverSubject(BroadPanel aBoardPanel, List<Point> aPoints) {
+	private void _handleObserverSubject(BoardPanel aBoardPanel, List<Point> aPoints) {
 		this._controller.clearObserver();
 		for (Point aPoint : aPoints) {
 			if (this._controller.isScope(aPoint)) {
@@ -32,7 +32,7 @@ public class BoardActionListener implements ActionListener {
 		}
 	}
 	
-	private void _reloadBlockAndUnit(BroadPanel aBoardPanel, Point aOldPoint, Point aNewPoint, Unit aUnit) {
+	private void _reloadBlockAndUnit(BoardPanel aBoardPanel, Point aOldPoint, Point aNewPoint, Unit aUnit) {
 		//remove highlight
 		this._controller.highlightMoveRanges(false);
 		
@@ -48,7 +48,7 @@ public class BoardActionListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {	
-		BroadPanel boardPanel = this._controller.boardPanel;
+		BoardPanel boardPanel = this._controller.boardPanel;
 		Block block =  boardPanel.block[this._point.x][this._point.y];
 		
 		if (this._controller.isTurnBear) {

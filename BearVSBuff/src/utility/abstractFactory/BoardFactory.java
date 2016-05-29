@@ -26,7 +26,7 @@ public class BoardFactory extends AbstractFactory {
 		return null;
 	}
 
-	@Override
+	//@Override
 	public BoardPanel getBoard(TypeBoard aType) {
 		if (aType == TypeBoard.TypeBoard7_7) {
 			return new BoardPanel(new Point(7, 7));

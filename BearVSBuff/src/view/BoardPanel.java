@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import model.board.Block;
 import controller.listener.BoardActionListener; 
 
-public class BroadPanel extends JPanel {
+public class BoardPanel extends JPanel {
 	
 	/**
 	 * 
@@ -22,8 +22,13 @@ public class BroadPanel extends JPanel {
 	public Block block[][] = new Block[kVERTICAL_NO][kHORIZONTALL_NO];;
 	
 	
-	public BroadPanel() {
+	public BoardPanel() {
 		this.setLayout(new GridLayout(kVERTICAL_NO, kHORIZONTALL_NO, 1, 1));
+		this.setBackground(Color.black);		
+	}
+	
+	public BoardPanel(Point point) {
+		this.setLayout(new GridLayout(kVERTICAL_NO, kHORIZONTALL_NO, point.x, point.y));
 		this.setBackground(Color.black);		
 	}
 	
