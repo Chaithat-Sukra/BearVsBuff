@@ -9,6 +9,7 @@ import model.board.Block;
 import model.unit.Bear;
 import model.unit.Buff;
 import model.unit.Unit;
+import view.BoardFrame;
 import view.BoardPanel;
 import controller.system.*;
 
@@ -20,6 +21,10 @@ public class BoardActionListener implements ActionListener {
 	public BoardActionListener(GameEngineController aController, Point aPoint) {
 		this._controller = aController;
 		this._point = aPoint;
+	}
+	
+	public BoardActionListener(GameEngineController aController) {
+		this._controller = aController;
 	}
 	
 	private void _handleObserverSubject(BoardPanel aBoardPanel, List<Point> aPoints) {
@@ -49,28 +54,39 @@ public class BoardActionListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {	
 		BoardPanel boardPanel = this._controller.boardPanel;
+		BoardFrame boardFrame = this._controller._fBoard;
 		Block block =  boardPanel.block[this._point.x][this._point.y];
 		
 		if (this._controller.isTurnBear) {
 			//check to show move range
 			Bear bear = block.getBear();
-			if (bear != null) {
-				Point pointUnit = bear.getCurrentPoint();
-				if (pointUnit.x == this._point.x && pointUnit.y == this._point.y) {
-					this._controller.currentBear = bear;
-					
-					List<Point> list = bear.getMoveRange();
-					_handleObserverSubject(boardPanel, list);					
-					this._controller.highlightMoveRanges(true);					
-					return;
-				}	
+			if(this._controller.currentBear == bear){
+				System.out.println(bear.getClass().getSimpleName() + " entered defensive stance");
+				bear.enableDefensiveMode(true);
+				this._controller.isTurnBear = false;
+				this._controller.highlightMoveRanges(false);
+				this._controller.saveLastTurn();
+				return;
+			}
+			else{
+				if (bear != null) {
+					Point pointUnit = bear.getCurrentPoint();
+					if (pointUnit.x == this._point.x && pointUnit.y == this._point.y) {
+						this._controller.currentBear = bear;
+						
+						List<Point> list = bear.getMoveRange();
+						_handleObserverSubject(boardPanel, list);					
+						this._controller.highlightMoveRanges(true);					
+						return;
+					}	
+				}
 			}
 			//move unit
 			if (this._controller.currentBear != null) {
 				bear = this._controller.currentBear; 
 				Point oldPoint = bear.getCurrentPoint();
 				//check not to press enemy
-				if (!block.isStoreBuff) {
+				if (!block.isStoreBuff && !block.isObstacle) {
 					_reloadBlockAndUnit(boardPanel, oldPoint, this._point, bear);
 					
 					//attack enemy in range
@@ -83,22 +99,32 @@ public class BoardActionListener implements ActionListener {
 		else {
 			//check to show move range
 			Buff buff = block.getBuff();
-			if (buff != null) {
-				Point pointUnit = buff.getCurrentPoint();
-				if (pointUnit.x == this._point.x && pointUnit.y == this._point.y) {
-					this._controller.currentBuff = buff;
-					
-					List<Point> list = buff.getMoveRange();
-					_handleObserverSubject(boardPanel, list);	
-					this._controller.highlightMoveRanges(true);
-					return;
+			if(this._controller.currentBuff == buff){
+				System.out.println(buff.getClass().getSimpleName() + " entered defensive stance");
+				buff.enableDefensiveMode(true);
+				this._controller.isTurnBear = true;
+				this._controller.highlightMoveRanges(false);
+				this._controller.saveLastTurn();
+				return;
+			}
+			else{
+				if (buff != null) {
+					Point pointUnit = buff.getCurrentPoint();
+					if (pointUnit.x == this._point.x && pointUnit.y == this._point.y) {
+						this._controller.currentBuff = buff;
+						
+						List<Point> list = buff.getMoveRange();
+						_handleObserverSubject(boardPanel, list);	
+						this._controller.highlightMoveRanges(true);
+						return;
+					}
 				}
 			}
 			//move unit
 			if (this._controller.currentBuff != null) {
 				buff = this._controller.currentBuff;
 				Point oldPoint = buff.getCurrentPoint();
-				if (!block.isStoreBear) {
+				if (!block.isStoreBear && !block.isObstacle) {
 					_reloadBlockAndUnit(boardPanel, oldPoint, this._point, buff);
 					
 					//attack enemy in range

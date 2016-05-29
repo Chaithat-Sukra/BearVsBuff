@@ -3,11 +3,13 @@ package controller.system;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.io.*;
 
 import javax.swing.JOptionPane;
 
 import controller.listener.BoardActionListener;
+import controller.listener.FrameActionListener;
 import view.BoardFrame;
 import view.BoardPanel;
 import model.board.Block;
@@ -29,7 +31,7 @@ public class GameEngineController {
 	public Bear currentBear;
 	public Buff currentBuff;
 	
-	private BoardFrame _fBoard;	
+	public BoardFrame _fBoard;	
 	
 	private ArrayList<BoardState> _previousBoardStates;
 	
@@ -43,8 +45,7 @@ public class GameEngineController {
 		this.isTurnBear = true;
 		
 		_previousBoardStates = new ArrayList<BoardState>();
-		
-		this._fBoard = new BoardFrame();  	
+		this._fBoard = new BoardFrame(new FrameActionListener(this));  	
 		this._promptStartGame();
 	}
 	
@@ -201,6 +202,7 @@ public class GameEngineController {
 					this.boardPanel.setContentOfBoard(pointClick, new BoardActionListener(this, pointClick));
 				}
 			}
+			this.spawnObstacles();
 			
 			this._fBoard.add(this.boardPanel);
 			this._fBoard.setVisible(true);
@@ -298,7 +300,7 @@ public class GameEngineController {
 		}
 	}
 	
-	private void _undoMoves(){
+	public void _undoMoves(){
 		
 		//Remove the last 3 states, if there are 3 to remove. Otherwise leave 1 state.
 		for(int i = 0; i < _turnsToUndo; i++){
@@ -311,7 +313,7 @@ public class GameEngineController {
 		if(!_previousBoardStates.isEmpty()) _restoreBoardState(_previousBoardStates.get(_previousBoardStates.size()-1));
 	}
 	
-	private void _saveBoardStateToFile()
+	public void _saveBoardStateToFile()
 	{
 		BoardState boardState = _previousBoardStates.get(_previousBoardStates.size()-1);
 		String newline = System.getProperty("line.separator");
@@ -362,7 +364,7 @@ public class GameEngineController {
 	 
 	}
 	
-	private void _loadBoardStateFromFile()
+	public void _loadBoardStateFromFile()
 	{
 		BoardState loadedState = new BoardState(BoardPanel.kVERTICAL_NO, BoardPanel.kHORIZONTALL_NO);
 		
@@ -411,6 +413,14 @@ public class GameEngineController {
 		 }
 		 
 		 _restoreBoardState(loadedState);
+	}
+	
+	//Spawn 3 obstacles in the middle that user can't click on
+	public void spawnObstacles(){	
+			for(int i = 2; i<5; i++){
+				Point pointClick = new Point(3, i);
+				this.boardPanel.setObstacleOfBoard(pointClick);
+			}
 	}
 }
 

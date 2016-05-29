@@ -22,10 +22,11 @@ public class Block extends Observer {
 	public boolean isStoreBear = false;
 	public boolean isStoreBuff = false;
 	public boolean isHighlight = false;
+	public boolean isObstacle = false;
 	
 	private Point _point;
 	private JPanel _pnBlock;
-	private JButton _btnBlock;		
+	public JButton _btnBlock;		
 	private Bear _bear;
 	private Buff _buff;
 	
@@ -83,7 +84,7 @@ public class Block extends Observer {
 		this.isHighlight = aHighlight;
 		
 		if (this.isHighlight) {
-			if (!this.isStoreBear && !this.isStoreBuff) {
+			if (!this.isStoreBear && !this.isStoreBuff && !this.isObstacle) {
 				this._btnBlock.setEnabled(true);
 				this._btnBlock.setBackground(Color.red);
 			}	
